@@ -12,7 +12,7 @@ public class TestTuringModel {
         TuringModel turingModel = TuringModel.getInstance();
         System.out.println(turingModel);
 
-        turingModel.setStartState("q2");
+        turingModel.setCurrentStateProperty("q2");
 
         String str = turingModel.toString();
         System.out.println(str);

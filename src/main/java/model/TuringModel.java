@@ -8,15 +8,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.text.TextAlignment;
-
-import java.util.ArrayList;
 
 
 /**
@@ -35,83 +27,76 @@ public class TuringModel {
     }
 
 
-    private int pos;
-    private String startState;
-    private String endState;
     private final RuleSet ruleSet;
-    private final SimpleSetProperty<String> stateSet;
-    private final SimpleSetProperty<String> charSet;
-    private final SimpleListProperty<String> paperIntList;
-
-    private final SimpleStringProperty turingMachine;
-    private final SimpleStringProperty startStateProperty;
+    private final SimpleIntegerProperty ruleListPositionProperty;
+    private final SimpleIntegerProperty positionProperty;
+    private final SimpleStringProperty currentStateProperty;
     private final SimpleStringProperty endStateProperty;
-    private final SimpleStringProperty charSetProperty;
-    private final SimpleStringProperty stateSetProperty;
-    private final SimpleIntegerProperty startPosProperty;
+
+    private final SimpleSetProperty<String> stateSetProperty;
+    private final SimpleSetProperty<String> charSetProperty;
+    private final SimpleListProperty<String> paperListProperty;
+
+    private final SimpleStringProperty charStringProperty;
+    private final SimpleStringProperty stateStringProperty;
+    private final SimpleStringProperty turingMachineStringProperty;
+
 
     private TuringModel(){
         // 初始化状态集
-        ObservableSet<String> observableStateSet = FXCollections.observableSet();
-        stateSet = new SimpleSetProperty<>(observableStateSet);
+        stateSetProperty = new SimpleSetProperty<>(FXCollections.observableSet());
         // 初始化字母表
-        ObservableSet<String> observableCharSet = FXCollections.observableSet();
-        charSet = new SimpleSetProperty<>(observableCharSet);
+        charSetProperty = new SimpleSetProperty<>(FXCollections.observableSet());
         // 初始化纸带上的数值
-        ObservableList<String> observablePaperIntListList = FXCollections.observableArrayList();
-        paperIntList = new SimpleListProperty<>(observablePaperIntListList);
+        paperListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
         // 初始化规则集合
         ruleSet = RuleSet.getInstance();
+        positionProperty = new SimpleIntegerProperty();
+        currentStateProperty = new SimpleStringProperty();
+        endStateProperty = new SimpleStringProperty();
+
+        charStringProperty = new SimpleStringProperty();
+        stateStringProperty = new SimpleStringProperty();
+        turingMachineStringProperty = new SimpleStringProperty();
+        ruleListPositionProperty = new SimpleIntegerProperty();
         loadTemplate();
-        startStateProperty = new SimpleStringProperty(startState);
-        endStateProperty = new SimpleStringProperty(endState);
-        charSetProperty = new SimpleStringProperty(charSetToString());
-        stateSetProperty = new SimpleStringProperty(stateSetToString());
-        turingMachine = new SimpleStringProperty(toString());
-        startPosProperty = new SimpleIntegerProperty(pos);
     }
 
     /**
      * 模板代码加载
      */
     public void loadTemplate(){
-        pos = 1;
-        startState = "q1";
-        if (startStateProperty != null){
-            startStateProperty.set(startState);
-        }
+        ruleListPositionProperty.set(-1);
 
-        stateSet.clear();
-        stateSet.add("q1");
-        stateSet.add("q2");
-        stateSet.add("q3");
-        stateSet.add("qe");
-        if (stateSetProperty != null){
-            stateSetProperty.set(stateSetToString());
-        }
+        positionProperty.set(1);
+        currentStateProperty.set("q1");
+        endStateProperty.set("qe");
 
-        endState = "qe";
+        stateSetProperty.clear();
+        stateSetProperty.add("q1");
+        stateSetProperty.add("q2");
+        stateSetProperty.add("q3");
+        stateSetProperty.add("qe");
+        stateStringProperty.set(stateSetToString());
 
-        charSet.clear();
-        charSet.add("0");
-        charSet.add("1");
-        charSet.add("b");
-        if (charSetProperty != null){
-            charSetProperty.set(charSetToString());
-        }
+        charSetProperty.clear();
+        charSetProperty.add("0");
+        charSetProperty.add("1");
+        charSetProperty.add("b");
+        charStringProperty.set(charSetToString());
 
-        paperIntList.clear();
-        paperIntList.add("b");
-        paperIntList.add("1");
-        paperIntList.add("1");
-        paperIntList.add("1");
-        paperIntList.add("1");
-        paperIntList.add("b");
-        paperIntList.add("1");
-        paperIntList.add("1");
-        paperIntList.add("1");
-        paperIntList.add("b");
-        paperIntList.add("b");
+        paperListProperty.clear();
+        paperListProperty.add("b");
+        paperListProperty.add("1");
+        paperListProperty.add("1");
+        paperListProperty.add("1");
+        paperListProperty.add("1");
+        paperListProperty.add("b");
+        paperListProperty.add("1");
+        paperListProperty.add("1");
+        paperListProperty.add("1");
+        paperListProperty.add("b");
+        paperListProperty.add("b");
 
         ruleSet.clear();
         ruleSet.addRule("['q1', '1', 'q1', '1', 'R']");
@@ -121,9 +106,7 @@ public class TuringModel {
         ruleSet.addRule("['q3', '1', 'q3', 'b', 'S']");
         ruleSet.addRule("['q3', 'b', 'qe', 'b', 'S']");
 
-        if (turingMachine != null){
-            turingMachine.set(toString());
-        }
+        turingMachineStringProperty.set(toString());
     }
 
     /**
@@ -132,22 +115,22 @@ public class TuringModel {
      */
     public String toString(){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("StartState", startState);
+        jsonObject.put("StartState", currentStateProperty.get());
 
         JSONArray jsonArray = new JSONArray();
-        ruleSet.ruleList.forEach(quintet -> jsonArray.add(quintet.toJsonArray()));
+        ruleSet.ruleSetProperty.forEach(quintet -> jsonArray.add(quintet.toJsonArray()));
         jsonObject.put("Rules", jsonArray);
 
         JSONArray charSetArray = new JSONArray();
-        charSetArray.addAll(charSet);
+        charSetArray.addAll(charSetProperty);
         jsonObject.put("CharSet", charSetArray);
 
         JSONArray stateSetArray = new JSONArray();
-        stateSetArray.addAll(stateSet);
+        stateSetArray.addAll(stateSetProperty);
         jsonObject.put("StateSet", stateSetArray);
 
         JSONArray paperIntListArray = new JSONArray();
-        paperIntListArray.addAll(paperIntList);
+        paperIntListArray.addAll(paperListProperty);
         jsonObject.put("PaperIntList", paperIntListArray);
 
         return JSON.toJSONString(
@@ -157,122 +140,113 @@ public class TuringModel {
                 SerializerFeature.WriteDateUseDateFormat);
     }
 
+    /**
+     * 从字符串中载入图灵机
+     * @param str 字符串
+     * @return 图灵机实体类
+     */
     public static TuringModel fromString(String str){
         TuringModel turingModel = TuringModel.getInstance();
         JSONObject jsonArray = (JSONObject) JSONObject.parse(str);
         // 加载开始状态
-        turingModel.startState = jsonArray.get("StartState").toString();
-        turingModel.startStateProperty.set(turingModel.startState);
+        turingModel.currentStateProperty.set(jsonArray.get("StartState").toString());
         // 加载规则集
         JSONArray tmp = (JSONArray) jsonArray.get("Rules");
         turingModel.ruleSet.clear();
         tmp.forEach(string -> turingModel.ruleSet.addRule(string.toString()));
         // 加载状态集
         tmp = (JSONArray) jsonArray.get("StateSet");
-        turingModel.stateSet.clear();
-        tmp.forEach(string -> turingModel.stateSet.add(string.toString()));
-        turingModel.stateSetProperty.set(turingModel.stateSetToString());
+        turingModel.stateSetProperty.clear();
+        tmp.forEach(string -> turingModel.stateSetProperty.add(string.toString()));
+        turingModel.stateStringProperty.set(turingModel.stateSetToString());
         // 加载字符集
         tmp = (JSONArray) jsonArray.get("CharSet");
-        turingModel.charSet.clear();
-        tmp.forEach(string -> turingModel.charSet.add(string.toString()));
-        turingModel.charSetProperty.set(turingModel.charSetToString());
+        turingModel.charSetProperty.clear();
+        tmp.forEach(string -> turingModel.charSetProperty.add(string.toString()));
+        turingModel.charStringProperty.set(turingModel.charSetToString());
         // 加载纸带列表
         tmp = (JSONArray) jsonArray.get("PaperIntList");
-        turingModel.paperIntList.clear();
-        tmp.forEach(string -> turingModel.paperIntList.add(string.toString()));
+        turingModel.paperListProperty.clear();
+        tmp.forEach(string -> turingModel.paperListProperty.add(string.toString()));
+        turingModel.turingMachineStringProperty.set(turingModel.toString());
         return turingModel;
     }
 
-    public String stateSetToString(){
+    /**
+     * 将状态集转换成字符串
+     * @return 字符串
+     */
+    private String stateSetToString(){
         JSONArray stateSetArray = new JSONArray();
-        stateSetArray.addAll(stateSet);
+        stateSetArray.addAll(stateSetProperty);
         return JSON.toJSONString(
                 stateSetArray,
                 SerializerFeature.WriteMapNullValue,
                 SerializerFeature.WriteDateUseDateFormat);
     }
 
-    public String charSetToString(){
+    /**
+     * 将字母集转换成字符串
+     * @return 字符串
+     */
+    private String charSetToString(){
         JSONArray charSetArray = new JSONArray();
-        charSetArray.addAll(charSet);
+        charSetArray.addAll(charSetProperty);
         return JSON.toJSONString(
                 charSetArray,
                 SerializerFeature.WriteMapNullValue,
                 SerializerFeature.WriteDateUseDateFormat);
     }
 
-    public SimpleStringProperty charsetToStringProperty(){
-        return charSetProperty;
-    }
-
-    public SimpleStringProperty stateSetToStringProperty(){
-        return stateSetProperty;
-    }
-
-    public String getStartState() {
-        return startState;
-    }
-
-    public SimpleStringProperty startStateProperty() {
-        return startStateProperty;
-    }
-
-    public void setStartStateProperty(String str) {
-        this.startState = str;
-        this.startStateProperty.set(str);
-    }
-
-    public String getEndState() {
-        return endState;
-    }
-
-    public SimpleStringProperty endStateProperty() {
-        return endStateProperty;
-    }
-
     public RuleSet getRuleSet() {
         return ruleSet;
     }
 
-    public ObservableSet<String> getStateSet() {
-        return stateSet.get();
+    public SimpleIntegerProperty getPositionProperty(){
+        return positionProperty;
     }
 
-    public SimpleSetProperty<String> stateSetProperty() {
-        return stateSet;
+    public void setPositionProperty(int value){
+        positionProperty.set(value);
     }
 
-    public ObservableSet<String> getCharSet() {
-        return charSet.get();
+    public SimpleStringProperty getCurrentStateProperty() {
+        return currentStateProperty;
     }
 
-    public SimpleSetProperty<String> charSetProperty() {
-        return charSet;
+    public void setCurrentStateProperty(String str) {
+        this.currentStateProperty.set(str);
     }
 
-    public SimpleListProperty<String> getPaperIntList() {
-        return paperIntList;
+    public SimpleStringProperty getEndStateProperty() {
+        return endStateProperty;
+    }
+
+    public SimpleStringProperty getCharStringProperty(){
+        return charStringProperty;
+    }
+
+    public SimpleStringProperty getStateStringProperty(){
+        return stateStringProperty;
+    }
+
+    public SimpleListProperty<String> getPaperListProperty() {
+        return paperListProperty;
     }
 
     public void setPaperIntListByIndex(int index, String str){
-        paperIntList.set(index, str);
-    }
-
-    public void setStartState(String startState){
-        this.startState = startState;
+        paperListProperty.set(index, str);
     }
 
     public SimpleStringProperty turingMachineProperty(){
-        return turingMachine;
+        return turingMachineStringProperty;
     }
 
-
-    public SimpleIntegerProperty getStartPosProperty(){
-        return startPosProperty;
+    public SimpleIntegerProperty getRuleListPositionProperty(){
+        return ruleListPositionProperty;
     }
 
-    public void setStartPosProperty(int value){
-        startPosProperty.set(value);
+    public void setRuleListPositionProperty(int position){
+        ruleListPositionProperty.set(position);
     }
 }

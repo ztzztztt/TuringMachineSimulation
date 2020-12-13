@@ -2,20 +2,14 @@ package model;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleSetProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import org.apache.commons.lang.StringEscapeUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Observable;
 import java.util.stream.Collectors;
 
 /**
@@ -26,11 +20,13 @@ import java.util.stream.Collectors;
 public class RuleSet {
     private static RuleSet ruleSet;
 
-    SimpleSetProperty<Quintet> ruleList;
+    SimpleSetProperty<Quintet> ruleSetProperty;
+    ObservableList<Quintet> ruleListProperty;
+
 
     private RuleSet(){
-        ObservableSet<Quintet> observableSet = FXCollections.observableSet();
-        ruleList = new SimpleSetProperty<>(observableSet);
+        ruleSetProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+        ruleListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     public static RuleSet getInstance() {
@@ -44,18 +40,10 @@ public class RuleSet {
      * 将规则列表转换成观察列表
      * @return 观察列表
      */
-    public ObservableList<String> toList(){
+    public ObservableList<String> toListString(){
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        this.ruleList.forEach(quintet -> observableList.add(quintet.toString()));
+        this.ruleSetProperty.forEach(quintet -> observableList.add(quintet.toString()));
         return observableList;
-    }
-
-    /**
-     * 添加规则
-     * @param quintet 规则五元组
-     */
-    public void addRule(Quintet quintet){
-        ruleList.add(quintet);
     }
 
     /**
@@ -65,19 +53,21 @@ public class RuleSet {
     public void addRule(String string){
         try{
             Quintet quintet = Quintet.fromString(string);
-            ruleList.add(quintet);
+            ruleSetProperty.add(quintet);
+            ruleSet.ruleList();
         } catch (Exception e){
             System.err.println(e.toString());
         }
     }
 
     public void clear(){
-        this.ruleList.clear();
+        this.ruleSetProperty.clear();
+        this.ruleListProperty.clear();
     }
 
     public static String toString(RuleSet ruleSet){
         ArrayList<String> arrayList = new ArrayList<>();
-        for (Quintet quintet : ruleSet.ruleList){
+        for (Quintet quintet : ruleSet.ruleSetProperty){
             arrayList.add(quintet.toString());
         }
         return JSONObject.toJSONString(arrayList);
@@ -93,16 +83,23 @@ public class RuleSet {
         return ruleSet;
     }
 
-    public ObservableSet<Quintet> getRuleList() {
-        return ruleList.get();
+
+    public SimpleSetProperty<Quintet> getRuleSetProperty() {
+        return ruleSetProperty;
     }
 
-    public SimpleSetProperty<Quintet> ruleListProperty() {
-        return ruleList;
+    private void ruleList(){
+        ruleListProperty.clear();
+        ruleListProperty.addAll(ruleSetProperty);
+        ruleListProperty.sort(Quintet::compareTo);
+    }
+
+    public ObservableList<Quintet> getRuleListProperty(){
+        return ruleListProperty;
     }
 
     public Quintet searchQuintet(String currentState, String currentReadInSymbol){
-        List<Quintet> arrayList = this.ruleList.stream().filter(q ->
+        List<Quintet> arrayList = this.ruleSetProperty.stream().filter(q ->
                 q.getCurrentReadInSymbol().equals(currentReadInSymbol) && q.getCurrentState().equals(currentState))
                 .collect(Collectors.toList());
 
@@ -118,8 +115,11 @@ public class RuleSet {
         }
     }
 
-
-//    public void loadQuintetList(JSONArray jsonArray){
-//        jsonArray.forEach(array.forEach());
-//    }
+    public Integer indexOf(Quintet quintet){
+        int result = ruleListProperty.indexOf(quintet);
+        if (result < 0 || result >= ruleListProperty.size()){
+            return -1;
+        }
+        return result;
+    }
 }

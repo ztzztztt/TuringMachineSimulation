@@ -7,9 +7,11 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="900" prefWidth="1400" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LauncherController">
+    <!--  纸带  -->
     <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="140.0" prefWidth="1380.0" style="-fx-background-color: #f3f3f3;">
         <ListView fx:id="paperListView" orientation="HORIZONTAL" layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1380.0" style="-fx-background-color: #f3f3f3;" />
     </VBox>
+    <!--  状态列表  -->
     <HBox alignment="CENTER" layoutX="10.0" layoutY="160.0" prefHeight="80.0" prefWidth="910.0" style="-fx-background-color: #f3f3f3;">
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="状态集：">
@@ -63,33 +65,49 @@
             </HBox.margin>
         </HBox>
     </HBox>
-<!--    <ListView fx:id="listView" layoutX="10.0" layoutY="250.0" prefHeight="640.0" prefWidth="910.0" style="-fx-background-color: #f3f3f3; -fx-font-size: 20px;" />-->
+    <!--  规则集  -->
     <TableView fx:id="tableView" layoutX="10.0" layoutY="250.0" prefHeight="640.0" prefWidth="910.0" style="-fx-background-color: #f3f3f3; -fx-font-size: 20px;" />
+    <!--  按钮  -->
     <VBox layoutX="930.0" layoutY="160.0" prefHeight="730.0" prefWidth="460.0">
-        <VBox prefHeight="530.0" prefWidth="460.0" style="-fx-background-color: #f3f3f3;">
-            <JFXTextArea fx:id="jFXTextArea" prefHeight="430.0" prefWidth="460.0" style="-fx-collapsible: 5px">
+        <VBox prefHeight="620.0" prefWidth="460.0" style="-fx-background-color: #f3f3f3;">
+            <JFXTextArea fx:id="jFXTextArea" prefHeight="510.0" prefWidth="460.0" style="-fx-collapsible: 5px">
                 <font>
                     <Font name="Calibri Light" size="20.0" />
                 </font>
-                </JFXTextArea>
-                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="460.0">
-                        <Button onAction="#loadingButtonClick" text="加载" textAlignment="CENTER">
-                            <HBox.margin>
-                                <Insets left="20.0" right="20.0" />
-                            </HBox.margin>
-                            </Button>
-                            <Button onAction="#resetButtonClick" text="重置" textAlignment="CENTER">
-                                <HBox.margin>
-                                    <Insets left="20.0" right="20.0" />
-                                </HBox.margin>
-                            </Button>
-                       </HBox>
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </VBox>
-        <HBox prefHeight="190.0" prefWidth="460.0" style="-fx-background-color: #f3f3f3;">
+            </JFXTextArea>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="460.0">
+                <Button onAction="#loadingButtonClick" text="加载" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </HBox.margin>
+                    </Button>
+                <Button onAction="#resetButtonClick" text="重置" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </HBox.margin>
+                </Button>
+                <Button onAction="#exportToFile" text="导出" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </HBox.margin>
+                </Button>
+                <Button onAction="#importFile" text="导入" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </HBox.margin>
+                </Button>
+            </HBox>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </VBox>
+        <HBox prefHeight="100.0" prefWidth="460.0" style="-fx-background-color: #f3f3f3;" alignment="CENTER">
             <Button onAction="#runOperator" text="开始" textAlignment="CENTER">
+                <HBox.margin>
+                    <Insets left="20.0" right="20.0" />
+                </HBox.margin>
+            </Button>
+            <Button onAction="#runStepOperator" text="单步" textAlignment="CENTER">
                 <HBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </HBox.margin>

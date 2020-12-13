@@ -57,15 +57,6 @@ public class Quintet {
      * @param arrayList 列表
      * @return 规则对象
      */
-    public static Quintet fromList(ArrayList<String> arrayList){
-        return new Quintet(arrayList.get(0), arrayList.get(1), arrayList.get(2), arrayList.get(3), arrayList.get(4));
-    }
-
-    /**
-     * 将列表转换成规则对象
-     * @param arrayList 列表
-     * @return 规则对象
-     */
     public static Quintet fromList(JSONArray arrayList){
         return new Quintet(
                 arrayList.get(0).toString(),
@@ -85,22 +76,6 @@ public class Quintet {
         return Quintet.fromList(jsonArray);
     }
 
-    public boolean isEqualTo(Quintet quintet){
-        boolean result;
-        if (this.equals(quintet)){
-            result = true;
-        } else{
-            result =
-                    this.currentState.equals(quintet.currentState) &&
-                            this.currentReadInSymbol.equals(quintet.currentReadInSymbol) &&
-                            this.newState.equals(quintet.newState) &&
-                            this.newWriteSymbol.equals(quintet.newWriteSymbol) &&
-                            this.operator.equals(quintet.operator);
-        }
-        return result;
-    }
-
-
     public JSONArray toJsonArray(){
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(currentState);
@@ -110,7 +85,6 @@ public class Quintet {
         jsonArray.add(operator);
         return jsonArray;
     }
-
 
     public String getCurrentState() {
         return currentState;
@@ -131,4 +105,15 @@ public class Quintet {
     public String getOperator() {
         return operator;
     }
+
+    public int compareTo(Quintet quintet){
+        int result = 0;
+        result = this.getCurrentState().compareTo(quintet.getCurrentState());
+        if (result == 0){
+            return this.getCurrentReadInSymbol().compareTo(quintet.getCurrentReadInSymbol());
+        } else {
+            return result;
+        }
+    }
+
 }
