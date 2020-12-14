@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +101,8 @@ public class RuleSet {
 
     public Quintet searchQuintet(String currentState, String currentReadInSymbol){
         List<Quintet> arrayList = this.ruleSetProperty.stream().filter(q ->
-                q.getCurrentReadInSymbol().equals(currentReadInSymbol) && q.getCurrentState().equals(currentState))
+                q.getCurrentReadInSymbol().toLowerCase(Locale.ROOT).equals(currentReadInSymbol.toLowerCase(Locale.ROOT))
+                        && q.getCurrentState().toLowerCase(Locale.ROOT).equals(currentState.toLowerCase(Locale.ROOT)))
                 .collect(Collectors.toList());
 //        System.out.println(arrayList.get(0));
         if(arrayList.size() == 0){
