@@ -26,7 +26,6 @@ public class TuringModel {
         return turingModel;
     }
 
-
     private final RuleSet ruleSet;
     private final SimpleIntegerProperty ruleListPositionProperty;
     private final SimpleIntegerProperty positionProperty;
@@ -137,7 +136,8 @@ public class TuringModel {
                 jsonObject,
                 SerializerFeature.PrettyFormat,
                 SerializerFeature.WriteMapNullValue,
-                SerializerFeature.WriteDateUseDateFormat);
+                SerializerFeature.WriteDateUseDateFormat
+        );
     }
 
     /**

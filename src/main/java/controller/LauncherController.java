@@ -1,8 +1,8 @@
 package controller;
 
 import com.jfoenix.controls.JFXTextArea;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -21,6 +21,7 @@ import service.Solution;
 import utils.DialogBoxUtil;
 
 import java.io.*;
+import java.nio.file.Paths;
 
 /**
  * @author by zhoutao
@@ -28,6 +29,13 @@ import java.io.*;
  * @date 2020/11/29 14:43
  */
 public class LauncherController {
+
+    private static final StringProperty title = new SimpleStringProperty();
+
+    public static StringProperty getTitle(){
+        return title;
+    }
+
     @FXML
     private JFXTextArea jFXTextArea;
     @FXML
@@ -182,6 +190,8 @@ public class LauncherController {
      */
     public void loadingButtonClick(){
         TuringModel.fromString(jFXTextArea.textProperty().get());
+        solution.reset();
+        focusPaperPosition();
     }
 
     public void resetButtonClick(){
@@ -189,6 +199,7 @@ public class LauncherController {
             TuringModel.getInstance().loadTemplate();
             solution.reset();
         }
+        title.set("主页");
         focusPaperPosition();
     }
 
@@ -198,7 +209,7 @@ public class LauncherController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         // 设置初始路径为项目根路径
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(String.valueOf(Paths.get(System.getProperty("user.dir"), "TuringMachine"))));
         Stage stage = new Stage();
         File file = fileChooser.showSaveDialog(stage);
         if (file == null){
@@ -222,11 +233,13 @@ public class LauncherController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         // 设置初始路径为项目根路径
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(String.valueOf(Paths.get(System.getProperty("user.dir"), "TuringMachine"))));
         Stage stage = new Stage();
         File file = fileChooser.showOpenDialog(stage);
         try{
             String exportFilePath = file.getAbsolutePath();
+            String filename = file.getName();
+            title.set(filename);
             FileReader fileReader = new FileReader(exportFilePath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             StringBuilder stringBuffer = new StringBuilder();
