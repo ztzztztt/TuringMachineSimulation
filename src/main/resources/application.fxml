@@ -102,12 +102,12 @@
             </VBox.margin>
         </VBox>
         <HBox prefHeight="100.0" prefWidth="460.0" style="-fx-background-color: #f3f3f3;" alignment="CENTER">
-            <Button onAction="#runOperator" text="开始" textAlignment="CENTER">
+            <Button fx:id="runButton" onAction="#runOperator" text="开始" textAlignment="CENTER">
                 <HBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </HBox.margin>
             </Button>
-            <Button onAction="#runStepOperator" text="单步" textAlignment="CENTER">
+            <Button fx:id="stepButton" onAction="#runStepOperator" text="单步" textAlignment="CENTER">
                 <HBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </HBox.margin>

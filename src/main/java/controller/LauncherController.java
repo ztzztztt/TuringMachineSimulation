@@ -18,6 +18,7 @@ import javafx.util.Callback;
 import model.Quintet;
 import model.TuringModel;
 import service.Solution;
+import utils.DialogBoxUtil;
 
 import java.io.*;
 
@@ -35,6 +36,12 @@ public class LauncherController {
     private Text charText;
     @FXML
     private Text currentText;
+
+    @FXML
+    private Button runButton;
+    @FXML
+    private Button stepButton;
+
     @FXML
     private TableView<Quintet> tableView;
     @FXML
@@ -42,12 +49,10 @@ public class LauncherController {
 
     private final Solution solution;
     private final TuringModel turingModel;
-    private final Thread thread;
 
     public LauncherController(){
         turingModel = TuringModel.getInstance();
         solution = new Solution();
-        thread = new Thread(solution);
     }
 
     @FXML
@@ -67,9 +72,10 @@ public class LauncherController {
         tableView.setItems(turingModel.getRuleSet().getRuleListProperty());
         this.customTableView();
 
-        listenPositionChange();
         focusPaperPosition();
+        listenPositionChange();
         listenRuleChange();
+        listenValueProperty();
     }
 
     @FXML
@@ -163,15 +169,12 @@ public class LauncherController {
      * 监听坐标值的变化
      */
     void listenPositionChange(){
-        TuringModel.getInstance().getPositionProperty().addListener((observable, oldValue, newValue) -> {
-            focusPaperPosition();
-        });
+        TuringModel.getInstance().getPositionProperty().addListener((observable, oldValue, newValue) -> focusPaperPosition());
     }
 
     void listenRuleChange(){
         TuringModel.getInstance().getRuleListPositionProperty().addListener((observable, oldValue, newValue) -> tableView.getSelectionModel().select(turingModel.getRuleListPositionProperty().get()));
     }
-
 
     /**
      * 事件监听
@@ -182,7 +185,10 @@ public class LauncherController {
     }
 
     public void resetButtonClick(){
-        TuringModel.getInstance().loadTemplate();
+        if (!solution.isRunning()){
+            TuringModel.getInstance().loadTemplate();
+            solution.reset();
+        }
         focusPaperPosition();
     }
 
@@ -237,12 +243,46 @@ public class LauncherController {
         }
     }
 
-
     public void runOperator(){
-        thread.start();
+        if (!solution.isRunning()) {
+            runButton.setDisable(true);
+            stepButton.setDisable(true);
+        }
+        solution.start();
+    }
+
+    public void listenValueProperty(){
+        solution.valueProperty().addListener((observable, oldValue, newValue) -> {
+            focusPaperPosition();
+            if (newValue != null && 0 == newValue){
+                System.out.println("任务结束");
+                runButton.setDisable(false);
+                stepButton.setDisable(false);
+                DialogBoxUtil.showAlertDialog("完成", turingModel.getPaperString(), Alert.AlertType.CONFIRMATION);
+            } else if (newValue != null && -1 == newValue){
+                System.out.println("任务出错");
+                runButton.setDisable(false);
+                stepButton.setDisable(false);
+                DialogBoxUtil.showAlertDialog(
+                        "错误",
+                        "寻找规则失败\n" +
+                                "寻找的规则为: " +
+                                "[" + turingModel.getCurrentStateProperty().get() +
+                                ", " + turingModel.getPaperListProperty().get(turingModel.getPositionProperty().get())
+                                + ", *, *, *]",
+                        Alert.AlertType.ERROR);
+            }
+        });
     }
 
     public void runStepOperator(){
-        solution.solveStep();
+        int result = solution.solveStep();
+        if (result != 0){
+            runButton.setDisable(true);
+        } else{
+            runButton.setDisable(false);
+            DialogBoxUtil.showAlertDialog("完成", turingModel.getPaperString(), Alert.AlertType.CONFIRMATION);
+        }
+        focusPaperPosition();
     }
 }

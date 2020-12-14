@@ -102,8 +102,7 @@ public class RuleSet {
         List<Quintet> arrayList = this.ruleSetProperty.stream().filter(q ->
                 q.getCurrentReadInSymbol().equals(currentReadInSymbol) && q.getCurrentState().equals(currentState))
                 .collect(Collectors.toList());
-
-        System.out.println(arrayList.get(0));
+//        System.out.println(arrayList.get(0));
         if(arrayList.size() == 0){
             System.err.println("Run Error, can't find rules");
             return null;

@@ -67,7 +67,6 @@ public class TuringModel {
      */
     public void loadTemplate(){
         ruleListPositionProperty.set(-1);
-
         positionProperty.set(1);
         currentStateProperty.set("q1");
         endStateProperty.set("qe");
@@ -115,6 +114,7 @@ public class TuringModel {
      */
     public String toString(){
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("StartPosition", positionProperty.get());
         jsonObject.put("StartState", currentStateProperty.get());
 
         JSONArray jsonArray = new JSONArray();
@@ -148,6 +148,8 @@ public class TuringModel {
     public static TuringModel fromString(String str){
         TuringModel turingModel = TuringModel.getInstance();
         JSONObject jsonArray = (JSONObject) JSONObject.parse(str);
+        // 加载初始化的读写头位置
+        turingModel.setPositionProperty(Integer.parseInt(jsonArray.get("StartPosition").toString()));
         // 加载开始状态
         turingModel.currentStateProperty.set(jsonArray.get("StartState").toString());
         // 加载规则集
@@ -196,6 +198,19 @@ public class TuringModel {
                 charSetArray,
                 SerializerFeature.WriteMapNullValue,
                 SerializerFeature.WriteDateUseDateFormat);
+    }
+
+    public String getPaperString(){
+        StringBuilder stringBuffer = new StringBuilder();
+        stringBuffer.append("[");
+        for (int i=0;i<paperListProperty.size();i++){
+            if (i != paperListProperty.size() - 1){
+                stringBuffer.append(paperListProperty.get(i)).append(", ");
+            } else {
+                stringBuffer.append(paperListProperty.get(i)).append("]");
+            }
+        }
+        return stringBuffer.toString();
     }
 
     public RuleSet getRuleSet() {
