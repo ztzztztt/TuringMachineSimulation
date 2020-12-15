@@ -115,5 +115,4 @@ public class Quintet {
             return result;
         }
     }
-
 }

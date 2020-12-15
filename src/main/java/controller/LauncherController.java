@@ -173,6 +173,11 @@ public class LauncherController {
         System.out.println("已选中纸带" + turingModel.getPositionProperty().get() + "这一列");
     }
 
+    @FXML
+    public void focusTableView(){
+        tableView.getSelectionModel().select(turingModel.getRuleListPositionProperty().get());
+    }
+
     /**
      * 监听坐标值的变化
      */
@@ -181,7 +186,7 @@ public class LauncherController {
     }
 
     void listenRuleChange(){
-        TuringModel.getInstance().getRuleListPositionProperty().addListener((observable, oldValue, newValue) -> tableView.getSelectionModel().select(turingModel.getRuleListPositionProperty().get()));
+        TuringModel.getInstance().getRuleListPositionProperty().addListener((observable, oldValue, newValue) -> focusTableView());
     }
 
     /**
@@ -297,5 +302,6 @@ public class LauncherController {
             DialogBoxUtil.showAlertDialog("完成", turingModel.getPaperString(), Alert.AlertType.CONFIRMATION);
         }
         focusPaperPosition();
+        focusTableView();
     }
 }
