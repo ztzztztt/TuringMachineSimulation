@@ -242,6 +242,9 @@ public class LauncherController {
         Stage stage = new Stage();
         File file = fileChooser.showOpenDialog(stage);
         try{
+            if (file == null){
+                return;
+            }
             String exportFilePath = file.getAbsolutePath();
             String filename = file.getName();
             title.set(filename);
